@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل اختصاصی alireza_x_teem</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        body {
+            background: url('https://i.imgur.com/vj0l2f6.png') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            text-align: center;
+            font-family: 'VT323', monospace;
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            margin: 50px auto;
+            box-shadow: 0 0 10px #00ffcc;
+        }
+        
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+        }
+        
+        button {
+            cursor: pointer;
+            background: linear-gradient(45deg, #00ffcc, #ff00ff);
+            color: black;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .neon-text {
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 20px #00ffcc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="loginBox">
+        <h2>🔒 ورود به پنل</h2>
+        <input type="password" id="password" placeholder="رمز عبور را وارد کنید">
+        <button onclick="checkPassword()">ورود</button>
+    </div>
+
+    <div class="container hidden" id="rubikaCheck">
+        <h2>📢 عضویت در کانال روبیکا</h2>
+        <p>برای استفاده از پنل، ابتدا عضو کانال روبیکا شوید.</p>
+        <a href="https://rubika.ir/joinc/DGIGJCBF0WLKMDQPXQLFVIAZOGHDABIQ" target="_blank">
+            <button>عضویت در کانال</button>
+        </a>
+        <button onclick="verifyRubika()">بررسی عضویت</button>
+    </div>
+
+    <div class="container hidden" id="panel">
+        <h2>🌍 انتخاب سرور</h2>
+        <select id="country">
+            <option value="germany">🇩🇪 آلمان</option>
+            <option value="turkey">🇹🇷 ترکیه</option>
+            <option value="usa">🇺🇸 آمریکا</option>
+        </select>
+
+        <h2>🔄 انتخاب نسل</h2>
+        <select id="generation">
+            <option value="ipv4">IPv4</option>
+            <option value="ipv6">IPv6</option>
+        </select>
+
+        <button onclick="generateDNS()">🔧 دریافت تنظیمات</button>
+
+        <div class="hidden" id="dnsResult">
+            <h2 class="neon-text">🔹 اطلاعات شما</h2>
+            <p id="dnsInfo"></p>
+            <button onclick="copyToClipboard()">📋 کپی اطلاعات</button>
+        </div>
+    </div>
+
+    <script>
+        function checkPassword() {
+            let password = document.getElementById("password").value;
+            if (password === "BIG_XTEEM") {
+                document.getElementById("loginBox").classList.add("hidden");
+                document.getElementById("rubikaCheck").classList.remove("hidden");
+            } else {
+                alert("رمز اشتباه است!");
+            }
+        }
+
+        function verifyRubika() {
+            let joined = confirm("آیا عضو کانال روبیکا شده‌اید؟");
+            if (joined) {
+                document.getElementById("rubikaCheck").classList.add("hidden");
+                document.getElementById("panel").classList.remove("hidden");
+            } else {
+                alert("لطفا ابتدا عضو کانال روبیکا شوید!");
+            }
+        }
+
+        function generateIPv6(prefix) {
+            let part1 = Math.floor(Math.random() * 65535).toString(16);
+            let part2 = Math.floor(Math.random() * 65535).toString(16);
+            let part3 = Math.floor(Math.random() * 999).toString(16);
+            return `${prefix}:${part1}:${part2}::${part3}`;
+        }
+
+        function generateDNS() {
+            let country = document.getElementById("country").value;
+            let generation = document.getElementById("generation").value;
+            let dnsInfo = "";
+
+            let ipv4_mapping = {
+                "germany": "185",
+                "turkey": "49",
+                "usa": "190"
+            };
+
+            let ipv6_mapping = {
+                "germany": "2606",
+                "turkey": "2001",
+                "usa": "9a08"
+            };
+
+            let ipv4_options = ["10.202.10.10", "10.202.10.11", "78.157.42.100", "78.157.42.101"];
+            let selected_ipv4_2 = ipv4_options[Math.floor(Math.random() * ipv4_options.length)];
+
+            if (generation === "ipv4") {
+                dnsInfo = `IPv4-1: ${ipv4_mapping[country]}.185.87.66<br>IPv4-2: ${selected_ipv4_2}`;
+            } else {
+                let selected_ipv6_1 = generateIPv6(ipv6_mapping[country]);
+                let selected_ipv6_2 = generateIPv6(ipv6_mapping[country]);
+                dnsInfo = `IPv6-1: ${selected_ipv6_1}<br>IPv6-2: ${selected_ipv6_2}`;
+            }
+
+            document.getElementById("dnsInfo").innerHTML = dnsInfo;
+            document.getElementById("dnsResult").classList.remove("hidden");
+        }
+
+        function copyToClipboard() {
+            let text = document.getElementById("dnsInfo").innerText;
+            let textarea = document.createElement("textarea");
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+            alert("کپی شد!");
+        }
+    </script>
+
+    <footer class="neon-text">
+        🚀 Id sazande: Alireza_x_teem 🚀
+    </footer>
+
+</body>
+</html>
